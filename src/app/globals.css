@@ -1,26 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:wght@300;400;500&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ── Brand Colors ── Desaturated palette with chrome accents ── */
+
+  /* Core darks — desaturated, near-neutral */
+  --color-system-green: #2C2F26;       /* Almost black-olive — primary dark */
+  --color-ink: #1C1C1A;                /* Near black — text */
+
+  /* Signal — the ONLY saturated color. Used for active/live states ONLY */
+  --color-signal-green: #A5D900;
+
+  /* Paper tones — warm neutrals */
+  --color-architect-paper: #F0EEEB;    /* Primary background — warm off-white */
+  --color-warm-paper: #F6F4F0;         /* Lighter warm surface */
+  --color-fog: #E9E6E1;               /* Card backgrounds */
+  --color-rule: #D5D1CB;              /* Borders, dividers */
+
+  /* Chrome / Metallic tones — NEW */
+  --color-chrome: #B8B5AE;            /* Chrome accent — polished metal */
+  --color-chrome-light: #CDC9C2;      /* Lighter chrome — subtle accents */
+  --color-chrome-dark: #9A968E;       /* Darker chrome — strong accents */
+  --color-steel: #7D7A73;             /* Steel — heavy labels */
+
+  /* Desaturated greens — stripped of saturation, now gray-green */
+  --color-moss: #6B6B60;              /* Desaturated — was #5A6B4A */
+  --color-sage: #908E85;              /* Desaturated — was #8B9A7B — now warm gray */
+
+  /* Functional */
+  --color-green-tint: #F2F3ED;        /* Barely-there tint — desaturated */
+  --color-alert: #B85A40;             /* Muted terracotta */
+
+  /* Fonts */
+  --font-sans: 'DM Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-architect-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+::selection {
+  background: var(--color-signal-green);
+  color: var(--color-system-green);
+}
+
+/* ── Grain overlay ── Film texture ── */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px 128px;
+}
+
+/* ── Scrollbar ── Chrome-toned ── */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-architect-paper);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-chrome);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-chrome-dark);
+}
+
+/* ── Blueprint grid ── Subtle technical grid ── */
+.blueprint-grid {
+  background-image:
+    linear-gradient(rgba(181, 178, 172, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(181, 178, 172, 0.18) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── Topographic lines ── Organic background layer ── */
+.topo-lines {
+  background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 200 Q100 180 200 200 T400 200' fill='none' stroke='%23CDC9C2' stroke-width='0.5' opacity='0.3'/%3E%3Cpath d='M0 220 Q100 200 200 220 T400 220' fill='none' stroke='%23CDC9C2' stroke-width='0.5' opacity='0.22'/%3E%3Cpath d='M0 180 Q100 160 200 180 T400 180' fill='none' stroke='%23CDC9C2' stroke-width='0.5' opacity='0.18'/%3E%3Cpath d='M0 240 Q100 220 200 240 T400 240' fill='none' stroke='%23CDC9C2' stroke-width='0.5' opacity='0.12'/%3E%3Cpath d='M0 160 Q100 140 200 160 T400 160' fill='none' stroke='%23CDC9C2' stroke-width='0.5' opacity='0.08'/%3E%3C/svg%3E");
+  background-size: 400px 400px;
+}
+
+/* ── Chrome shimmer utility ── Metallic gradient for accents ── */
+.chrome-accent {
+  background: linear-gradient(135deg, #CDC9C2 0%, #B8B5AE 40%, #9A968E 60%, #B8B5AE 100%);
+}
+
+.chrome-border {
+  border-color: var(--color-chrome);
+}
+
+.chrome-text {
+  background: linear-gradient(135deg, #9A968E 0%, #CDC9C2 50%, #7D7A73 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Smooth page transitions ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-enter {
+  animation: fadeIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
