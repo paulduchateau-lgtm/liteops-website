@@ -625,8 +625,8 @@ export default function SystemesPage() {
 
               <div className="relative h-40 overflow-hidden border border-chrome-light/60">
                 <Image
-                  src="/photos/agent-pilot.avif"
-                  alt="Infrastructure Namibia — plateforme centrale Lite Ops"
+                  src="/photos/photo-1506773090264-ac0b07293a64.avif"
+                  alt="Vallée désertique — Namibia et systèmes"
                   fill
                   className="object-cover object-center"
                 />

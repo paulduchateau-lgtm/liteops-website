@@ -447,8 +447,8 @@ export default function CustomPage() {
         {/* Background photo */}
         <div className="absolute inset-0 z-0">
           <Image
-            src="/photos/premium_photo-1675705721263-0bbeec261c49.avif"
-            alt=""
+            src="/photos/photo-1499988921418-b7df40ff03f9.avif"
+            alt="Dune abstraite — sobriété et craft"
             fill
             priority
             className="object-cover object-center opacity-[0.08]"
@@ -707,8 +707,8 @@ export default function CustomPage() {
                   className="relative h-36 overflow-hidden border border-chrome-light/60"
                 >
                   <Image
-                    src="/photos/photo-1761495623285-22c46934ed13.avif"
-                    alt="Collaboration sur une roadmap produit"
+                    src="/photos/photo-1772136590973-535e4e007f02.avif"
+                    alt="Désert rouge — terre et précision"
                     fill
                     className="object-cover object-center opacity-80"
                     sizes="(max-width: 1024px) 100vw, 50vw"

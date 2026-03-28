@@ -898,13 +898,13 @@ export default function SailorPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {[
               {
-                src: "/photos/photo-1482881497185-d4a9ddbe4151.avif",
-                alt: "Interface Sailor — aperçu",
+                src: "/photos/premium_photo-1728882427558-ea1bef1ba75b.avif",
+                alt: "Désert ambré — chaleur et profondeur",
                 caption: "Interface en cours de finalisation",
               },
               {
-                src: "/photos/photo-1505521377774-103a8cc2f735.avif",
-                alt: "Chat interface Sailor",
+                src: "/photos/photo-1651936020104-60665f796d7b.avif",
+                alt: "Désert vaste — horizon et clarté",
                 caption: "Interface en cours de finalisation",
               },
             ].map((shot, i) => (
