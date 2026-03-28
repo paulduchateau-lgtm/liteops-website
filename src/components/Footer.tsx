@@ -28,6 +28,7 @@ const columns: FooterColumn[] = [
       { label: "Opérateurs", href: "/operateurs" },
       { label: "Pilot", href: "/agents/pilot" },
       { label: "Sailor", href: "/agents/sailor" },
+      { label: "Matchmaker", href: "/agents/matchmaker" },
       { label: "Systèmes", href: "/systemes" },
       { label: "Namibia", href: "/systemes#namibia" },
     ],

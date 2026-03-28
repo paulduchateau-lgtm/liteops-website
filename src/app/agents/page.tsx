@@ -31,7 +31,7 @@ const AGENTS: AgentCard[] = [
     tagline: "Data Analytics par chatbot",
     description:
       "Requêtez votre base de données en langage naturel. Analysez, explorez, générez des rapports — sans écrire une ligne de SQL.",
-    photo: "/photos/photo-1679587246899-8b9172fc78e2.avif",
+    photo: "/photos/agent-pilot.avif",
     href: "/agents/pilot",
     operators: ["DATA LAYER", "TEXT TO SQL", "LLM", "GRAPH GEN"],
     variants: [
@@ -46,7 +46,7 @@ const AGENTS: AgentCard[] = [
     tagline: "Base documentaire intelligente",
     description:
       "Transformez votre base documentaire en chatbot à sources citées. Chaque réponse est ancrée dans le corpus. Zéro hallucination.",
-    photo: "/photos/photo-1553748024-dd3fd69ab116.avif",
+    photo: "/photos/agent-sailor.avif",
     href: "/agents/sailor",
     operators: ["DATA LAYER", "OCR", "DOC UNDERSTANDING", "RAG", "LLM"],
     variants: [
@@ -61,7 +61,7 @@ const AGENTS: AgentCard[] = [
     tagline: "Matching ressources–besoins",
     description:
       "Faites correspondre vos ressources aux besoins. Humaines, matérielles, services ou produits — avec scoring structuré et diagramme radar.",
-    photo: "/photos/photo-1739086759198-b99a6e3f8599.avif",
+    photo: "/photos/agent-matchmaker.avif",
     href: "/agents/matchmaker",
     operators: ["DATA LAYER", "EMBEDDING", "NLP PARSER", "MATCH ENGINE", "SCORER", "CONV AGENT"],
     variants: [

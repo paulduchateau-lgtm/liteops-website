@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useRef } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { motion, AnimatePresence, useInView, type Variants } from "framer-motion";
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+const ES: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 // ---------------------------------------------------------------------------
 // Types
@@ -11,31 +16,78 @@ import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 type LayerKey = "technique" | "metier" | "conduite";
 
-interface Capability {
-  id: string;
-  label: string;
-  description: string;
-}
-
-interface AgentNode {
-  id: string;
-  label: string;
-  sublabel: string;
-  angle: number;
-}
-
-interface SystemDiagramProps {
-  title: string;
-  status?: string;
-  objective: string;
-  agents: AgentNode[];
-  flow: string[];
-  connectedSystems?: string[];
-}
-
 // ---------------------------------------------------------------------------
 // Data
 // ---------------------------------------------------------------------------
+
+const DEPLOYMENT_LEVELS = [
+  {
+    number: "01",
+    title: "Local. Immédiat.",
+    description:
+      "Nos agents vivent en local sur les postes. Sans internet, sans friction d'installation, sans nécessiter de formation. Commencez demain. Sur votre poste. Sans rien changer.",
+    status: "DÉPLOIEMENT < 24H",
+  },
+  {
+    number: "02",
+    title: "Connecté. Souverain.",
+    description:
+      "Version hébergée en France, sécurisée. La plateforme Namibia concentre et unifie la data. Vos agents communiquent entre eux. Vos données restent en France.",
+    status: "HÉBERGEMENT SCALEWAY — FRANCE",
+  },
+  {
+    number: "03",
+    title: "Intégré. Sur mesure.",
+    description:
+      "Un agent ou une série d'agents intégrés dans votre écosystème métier. Connexion avec vos outils et bases existantes. Mise en place de processus complémentaires. L'IA qui s'intègre dans vos systèmes, pas l'inverse.",
+    status: "INTÉGRATION COMPLÈTE",
+  },
+];
+
+const APPLICATION_EXAMPLES = [
+  {
+    id: "risque",
+    title: "Système Risque",
+    description:
+      "Cartographie, évaluation et monitoring des risques opérationnels.",
+    agents: ["Pilot", "Sailor"],
+  },
+  {
+    id: "rh",
+    title: "Système RH",
+    description:
+      "Gestion intelligente des talents, compétences et mobilité interne.",
+    agents: ["Pilot", "Matchmaker"],
+  },
+  {
+    id: "changement",
+    title: "Système Pilotage du changement",
+    description:
+      "Accompagnement et suivi des transformations organisationnelles.",
+    agents: ["Sailor", "Pilot"],
+  },
+  {
+    id: "qualite",
+    title: "Système Qualité données",
+    description:
+      "Audit, nettoyage et enrichissement continu de la donnée métier.",
+    agents: ["Pilot"],
+  },
+  {
+    id: "recrutement",
+    title: "Système Recrutement",
+    description:
+      "Matching candidats-postes avec scoring structuré et analyse multi-critères.",
+    agents: ["Matchmaker", "Sailor"],
+  },
+  {
+    id: "acquisition",
+    title: "Système Acquisition",
+    description:
+      "Qualification de leads et optimisation du pipeline commercial.",
+    agents: ["Matchmaker", "Pilot"],
+  },
+];
 
 const LAYERS: Record<LayerKey, { label: string; description: string; items: string[] }> = {
   technique: {
@@ -46,7 +98,7 @@ const LAYERS: Record<LayerKey, { label: string; description: string; items: stri
       "Flux de données sécurisés entre agents",
       "Chiffrement de bout en bout",
       "Rate limiting et circuit breakers",
-      "Observabilite et tracing distribue",
+      "Observabilité et tracing distribué",
     ],
   },
   metier: {
@@ -55,7 +107,7 @@ const LAYERS: Record<LayerKey, { label: string; description: string; items: stri
     items: [
       "Logique métier encapsulée par agent",
       "Workflows spécifiques à votre secteur",
-      "Regles de validation domaine",
+      "Règles de validation domaine",
       "Ontologies métier partagées",
       "Capitalisation sur la mémoire organisationnelle",
     ],
@@ -73,68 +125,50 @@ const LAYERS: Record<LayerKey, { label: string; description: string; items: stri
   },
 };
 
-const CAPABILITIES: Capability[] = [
-  {
-    id: "orchestration",
-    label: "Orchestration multi-agents",
-    description: "Coordination fluide entre agents specialises autour de Namibia.",
-  },
-  {
-    id: "memory",
-    label: "Memoire partagee",
-    description: "Contexte commun persistant entre tous les agents du système.",
-  },
-  {
-    id: "monitoring",
-    label: "Monitoring temps reel",
-    description: "Observabilite complete des flux, etats et performances.",
-  },
-  {
-    id: "hosting",
-    label: "Scaleway ZDR",
-    description: "Hébergement français zone de disponibilité redondante.",
-  },
-  {
-    id: "api",
-    label: "Architecture API-first",
-    description: "Chaque agent expose une interface standardisée et documentée.",
-  },
-  {
-    id: "sovereign",
-    label: "100% souverain",
-    description: "Aucune donnee ne quitte le territoire national.",
-  },
-];
-
-const RECRUITMENT_AGENTS: AgentNode[] = [
-  { id: "ag001-rh", label: "AG001-RH", sublabel: "Pilot RH", angle: -90 },
-  { id: "ag002", label: "AG002", sublabel: "Sailor — docs RH", angle: 30 },
-  { id: "custom-scoring", label: "CUSTOM", sublabel: "Scoring candidats", angle: 150 },
-];
-
-const ACQUISITION_AGENTS: AgentNode[] = [
-  { id: "ag001", label: "AG001", sublabel: "Pilot — data prospects", angle: -90 },
-  { id: "ag002-acq", label: "AG002-ACQ", sublabel: "Sailor Acquisition", angle: 30 },
-  { id: "custom-acq", label: "CUSTOM", sublabel: "Scoring prospects", angle: 150 },
-];
-
 // ---------------------------------------------------------------------------
 // Animation variants
 // ---------------------------------------------------------------------------
-
-const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, delay: i * 0.08, ease: EASE_OUT },
+    transition: { duration: 0.6, delay: i * 0.1, ease: ES },
   }),
 };
 
 // ---------------------------------------------------------------------------
-// SVG Network Diagram — Namibia central hub
+// Reveal component
+// ---------------------------------------------------------------------------
+
+function Reveal({
+  children,
+  className,
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px 0px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 28 }}
+      transition={{ duration: 0.72, ease: ES, delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Namibia Hub SVG Diagram
 // ---------------------------------------------------------------------------
 
 function NamibiaHubDiagram() {
@@ -160,14 +194,12 @@ function NamibiaHubDiagram() {
       role="img"
     >
       <defs>
-        {/* Hub glow stays signal-green — hub is "active/live" */}
         <radialGradient id="hub-glow" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#A5D900" stopOpacity="0.15" />
           <stop offset="100%" stopColor="#A5D900" stopOpacity="0" />
         </radialGradient>
       </defs>
 
-      {/* Orbit ring — chrome-light dashed */}
       <circle
         cx={cx}
         cy={cy}
@@ -178,10 +210,8 @@ function NamibiaHubDiagram() {
         strokeDasharray="3 4"
       />
 
-      {/* Glow behind hub */}
       <circle cx={cx} cy={cy} r={hubR + 20} fill="url(#hub-glow)" />
 
-      {/* Spoke lines — chrome by default */}
       {peripheralNodes.map((node) => {
         const rad = (node.angle * Math.PI) / 180;
         const x2 = cx + orbitR * Math.cos(rad);
@@ -200,7 +230,6 @@ function NamibiaHubDiagram() {
         );
       })}
 
-      {/* Peripheral nodes — chrome-dark border */}
       {peripheralNodes.map((node) => {
         const rad = (node.angle * Math.PI) / 180;
         const x = cx + orbitR * Math.cos(rad);
@@ -224,7 +253,6 @@ function NamibiaHubDiagram() {
         );
       })}
 
-      {/* Hub center — stays signal-green (active/live) */}
       <circle cx={cx} cy={cy} r={hubR} fill="#2F3427" stroke="#A5D900" strokeWidth="1.5" />
       <text
         x={cx}
@@ -255,201 +283,7 @@ function NamibiaHubDiagram() {
 }
 
 // ---------------------------------------------------------------------------
-// System Network Diagram — reusable for example systems
-// ---------------------------------------------------------------------------
-
-function SystemDiagram({ title, status, objective, agents, flow, connectedSystems }: SystemDiagramProps) {
-  const cx = 160;
-  const cy = 140;
-  const hubR = 26;
-  const orbitR = 90;
-
-  return (
-    <div className="border border-chrome-light/60 bg-warm-paper space-y-5">
-      {/* Header */}
-      <div className="flex items-start justify-between gap-4 px-8 lg:px-10 pt-8 lg:pt-10">
-        <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-steel mb-1">Système</p>
-          <h3 className="font-mono text-sm font-medium text-ink">{title}</h3>
-        </div>
-        {status && (
-          <span className="flex items-center gap-1.5 font-mono text-[11px] text-signal-green whitespace-nowrap">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-signal-green" aria-hidden="true" />
-            {status}
-          </span>
-        )}
-      </div>
-
-      <p className="text-xs text-ink/75 leading-relaxed px-8 lg:px-10">{objective}</p>
-
-      {/* SVG */}
-      <div className="px-8 lg:px-12">
-        <svg
-          viewBox="0 0 320 280"
-          className="w-full"
-          aria-label={`Diagramme réseau — ${title}`}
-          role="img"
-        >
-          <defs>
-            {/* Hub glow stays signal-green — hub is "active/live" */}
-            <radialGradient id={`glow-${title}`} cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#A5D900" stopOpacity="0.12" />
-              <stop offset="100%" stopColor="#A5D900" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-
-          {/* Orbit ring — chrome-light dashed */}
-          <circle
-            cx={cx}
-            cy={cy}
-            r={orbitR}
-            fill="none"
-            stroke="#CDC9C2"
-            strokeWidth="0.8"
-            strokeDasharray="3 4"
-          />
-
-          {/* Glow */}
-          <circle cx={cx} cy={cy} r={hubR + 18} fill={`url(#glow-${title})`} />
-
-          {/* Spokes — chrome by default */}
-          {agents.map((agent) => {
-            const rad = (agent.angle * Math.PI) / 180;
-            const x2 = cx + orbitR * Math.cos(rad);
-            const y2 = cy + orbitR * Math.sin(rad);
-            return (
-              <line
-                key={agent.id}
-                x1={cx}
-                y1={cy}
-                x2={x2}
-                y2={y2}
-                stroke="#B8B5AE"
-                strokeWidth="1"
-                strokeOpacity="0.7"
-              />
-            );
-          })}
-
-          {/* Agent nodes — chrome-dark border */}
-          {agents.map((agent) => {
-            const rad = (agent.angle * Math.PI) / 180;
-            const x = cx + orbitR * Math.cos(rad);
-            const y = cy + orbitR * Math.sin(rad);
-            return (
-              <g key={agent.id}>
-                <circle cx={x} cy={y} r={20} fill="#EFEFEF" stroke="#9A968E" strokeWidth="1" />
-                <text
-                  x={x}
-                  y={y - 4}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize="5.5"
-                  fontFamily="'JetBrains Mono', monospace"
-                  fill="#2F3427"
-                  fontWeight="500"
-                >
-                  {agent.label}
-                </text>
-                <text
-                  x={x}
-                  y={y + 6}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize="4.5"
-                  fontFamily="'JetBrains Mono', monospace"
-                  fill="#9A968E"
-                >
-                  {agent.sublabel.length > 10 ? agent.sublabel.slice(0, 10) + "…" : agent.sublabel}
-                </text>
-              </g>
-            );
-          })}
-
-          {/* Hub — stays signal-green (active/live) */}
-          <circle cx={cx} cy={cy} r={hubR} fill="#2F3427" stroke="#A5D900" strokeWidth="1.5" />
-          <text
-            x={cx}
-            y={cy - 5}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="7"
-            fontFamily="'JetBrains Mono', monospace"
-            fill="#A5D900"
-            fontWeight="500"
-            letterSpacing="0.5"
-          >
-            NAMIBIA
-          </text>
-          <text
-            x={cx}
-            y={cy + 6}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fontSize="5"
-            fontFamily="'JetBrains Mono', monospace"
-            fill="#9A968E"
-          >
-            HUB
-          </text>
-
-          {/* Connected systems on the right — chrome borders */}
-          {connectedSystems && connectedSystems.map((sys, i) => {
-            const y = 60 + i * 50;
-            const x = 260;
-            return (
-              <g key={sys}>
-                <line
-                  x1={cx + orbitR + 5}
-                  y1={cy}
-                  x2={x - 30}
-                  y2={y + 8}
-                  stroke="#B8B5AE"
-                  strokeWidth="0.8"
-                  strokeDasharray="2 3"
-                />
-                <rect x={x - 28} y={y} width={60} height={18} fill="#F5F2ED" stroke="#B8B5AE" strokeWidth="1" />
-                <text
-                  x={x - 28 + 30}
-                  y={y + 9}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize="5"
-                  fontFamily="'JetBrains Mono', monospace"
-                  fill="#7D7A73"
-                >
-                  {sys}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      {/* Process flow */}
-      <div className="px-8 lg:px-10 pb-8 lg:pb-10">
-        <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-chrome-dark mb-2">Flux</p>
-        <div className="flex items-center gap-0" role="list" aria-label="Étapes du processus">
-          {flow.map((step, i) => (
-            <div key={step} className="flex items-center" role="listitem">
-              <span className="font-mono text-[11px] font-medium tracking-wider text-steel bg-green-tint border border-chrome-light/60 px-2 py-1">
-                {step}
-              </span>
-              {i < flow.length - 1 && (
-                <span className="font-mono text-[10px] text-chrome-dark px-1" aria-hidden="true">
-                  →
-                </span>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Layer Toggle
+// Layer Toggles
 // ---------------------------------------------------------------------------
 
 function LayerToggles() {
@@ -457,7 +291,6 @@ function LayerToggles() {
 
   return (
     <div className="space-y-6">
-      {/* Toggle buttons */}
       <div className="flex flex-wrap gap-2" role="tablist" aria-label="Couches du système">
         {(Object.keys(LAYERS) as LayerKey[]).map((key) => (
           <button
@@ -479,7 +312,6 @@ function LayerToggles() {
         ))}
       </div>
 
-      {/* Panel */}
       <AnimatePresence mode="wait">
         <motion.div
           key={active}
@@ -489,7 +321,7 @@ function LayerToggles() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.25, ease: ES }}
           className="border border-chrome-light/60 bg-warm-paper p-6 space-y-4"
         >
           <div>
@@ -521,7 +353,6 @@ function ContactForm() {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Wire to backend when ready
     setSent(true);
   }
 
@@ -543,7 +374,10 @@ function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="contact-name" className="block font-mono text-[11px] uppercase tracking-[0.15em] text-steel mb-1.5">
+          <label
+            htmlFor="contact-name"
+            className="block font-mono text-[11px] uppercase tracking-[0.15em] text-steel mb-1.5"
+          >
             Nom
           </label>
           <input
@@ -556,7 +390,10 @@ function ContactForm() {
           />
         </div>
         <div>
-          <label htmlFor="contact-org" className="block font-mono text-[11px] uppercase tracking-[0.15em] text-steel mb-1.5">
+          <label
+            htmlFor="contact-org"
+            className="block font-mono text-[11px] uppercase tracking-[0.15em] text-steel mb-1.5"
+          >
             Organisation
           </label>
           <input
@@ -570,7 +407,10 @@ function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="contact-email" className="block font-mono text-[11px] uppercase tracking-[0.15em] text-steel mb-1.5">
+        <label
+          htmlFor="contact-email"
+          className="block font-mono text-[11px] uppercase tracking-[0.15em] text-steel mb-1.5"
+        >
           Email
         </label>
         <input
@@ -584,7 +424,10 @@ function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="contact-context" className="block font-mono text-[11px] uppercase tracking-[0.15em] text-steel mb-1.5">
+        <label
+          htmlFor="contact-context"
+          className="block font-mono text-[11px] uppercase tracking-[0.15em] text-steel mb-1.5"
+        >
           Contexte
         </label>
         <textarea
@@ -611,74 +454,125 @@ function ContactForm() {
 
 export default function SystemesPage() {
   return (
-    <div className="pt-16">
+    <>
       {/* ------------------------------------------------------------------ */}
-      {/* HEADER                                                              */}
+      {/* SECTION 1 — HERO                                                   */}
       {/* ------------------------------------------------------------------ */}
-      <section className="relative overflow-hidden bg-system-green">
-        {/* Background photo */}
-        <div className="absolute inset-0 opacity-20">
-          <Image
-            src="/photos/premium_photo-1670897797006-81cbbb1bfc7b.avif"
-            alt=""
-            fill
-            className="object-cover object-center"
-            priority
-            aria-hidden="true"
-          />
-        </div>
-
-        {/* Grid overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "linear-gradient(#A5D900 1px, transparent 1px), linear-gradient(90deg, #A5D900 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-          aria-hidden="true"
-        />
-
-        <div className="relative max-w-7xl mx-auto px-8 lg:px-20 py-32 lg:py-40">
-          {/* Breadcrumb */}
-          <nav aria-label="Fil d'ariane" className="mb-8">
-            <ol className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.15em] text-chrome-light/70">
-              <li>
-                <Link href="/" className="hover:text-chrome-light transition-colors">
-                  Accueil
-                </Link>
-              </li>
-              <li aria-hidden="true">/</li>
-              <li className="text-chrome-light" aria-current="page">
-                Systèmes
-              </li>
-            </ol>
-          </nav>
-
+      <section className="bg-system-green pt-32 pb-20 lg:pt-40 lg:pb-28 blueprint-grid">
+        <div className="max-w-7xl mx-auto px-8 lg:px-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.7, ease: ES }}
             className="max-w-3xl"
           >
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-chrome mb-4">
-              Infrastructure intelligente
-            </p>
-            <h1 className="font-sans text-4xl lg:text-5xl font-medium text-architect-paper leading-tight mb-6">
-              Les Systèmes
+            <span className="font-mono text-[11px] tracking-[0.22em] uppercase text-chrome-dark block mb-4">
+              SYSTÈMES
+            </span>
+            <h1
+              className="font-sans font-normal md:font-light text-architect-paper leading-[0.95] tracking-tight mb-6"
+              style={{ fontSize: "clamp(2.4rem, 5vw, 4.5rem)" }}
+            >
+              L&apos;IA qui s&apos;adapte.
+              <br />
+              Pas l&apos;inverse.
             </h1>
-            <p className="font-sans text-base lg:text-lg text-architect-paper/80 leading-relaxed max-w-2xl">
-              Un système est un ensemble d&apos;agents orchestrés, connectés à une plateforme commune.
-              Il répond à un objectif macro de votre organisation.
+            <p className="text-lg text-architect-paper/70 font-sans max-w-xl leading-relaxed">
+              Nos systèmes s&apos;intègrent progressivement dans vos opérations.
+              Sans détruire l&apos;existant. Sans friction.
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* SECTION 1 — NAMIBIA HUB                                            */}
+      {/* SECTION 2 — THREE DEPLOYMENT LEVELS                               */}
       {/* ------------------------------------------------------------------ */}
-      <section id="namibia" className="bg-architect-paper border-b border-chrome-light/60" aria-labelledby="namibia-heading">
+      <section className="bg-architect-paper blueprint-grid py-24 lg:py-32" aria-labelledby="deployment-heading">
+        <div className="max-w-7xl mx-auto px-8 lg:px-20">
+          <Reveal className="mb-16">
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-steel block mb-3">
+              Philosophie de déploiement
+            </span>
+            <h2
+              id="deployment-heading"
+              className="font-sans font-normal md:font-light text-system-green leading-tight mb-4"
+              style={{ fontSize: "clamp(1.6rem, 3vw, 2.4rem)" }}
+            >
+              Un déploiement progressif.
+              <br />
+              Trois niveaux d&apos;intégration.
+            </h2>
+            <p className="text-base text-ink/70 max-w-2xl leading-relaxed">
+              Nous n&apos;allons pas détruire l&apos;existant pour imposer notre savoir.
+              La puissance de l&apos;IA aujourd&apos;hui réside dans sa capacité à s&apos;intégrer
+              en limitant les efforts.
+            </p>
+          </Reveal>
+
+          {/* Cards stack with vertical connector line */}
+          <div className="relative max-w-3xl">
+            {/* Vertical connector line */}
+            <div
+              className="absolute left-[1.75rem] top-12 bottom-12 w-px bg-chrome-light/60"
+              aria-hidden="true"
+            />
+
+            <div className="space-y-0">
+              {DEPLOYMENT_LEVELS.map((level, i) => (
+                <Reveal key={level.number} delay={i * 0.12}>
+                  <div className="relative flex gap-8 lg:gap-12 pb-0">
+                    {/* Number column */}
+                    <div className="flex-shrink-0 flex flex-col items-center" style={{ width: "3.5rem" }}>
+                      <div className="relative z-10 w-14 h-14 flex items-center justify-center bg-architect-paper border border-chrome-light/60">
+                        <span
+                          className="font-mono font-medium text-chrome-dark leading-none"
+                          style={{ fontSize: "clamp(1.1rem, 2vw, 1.5rem)" }}
+                        >
+                          {level.number}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Card content */}
+                    <div
+                      className={[
+                        "flex-1 border border-chrome-light/60 bg-warm-paper p-8 lg:p-10",
+                        i < DEPLOYMENT_LEVELS.length - 1 ? "mb-6" : "",
+                      ].join(" ")}
+                    >
+                      <h3
+                        className="font-sans font-normal md:font-light text-ink leading-tight mb-4"
+                        style={{ fontSize: "clamp(1.2rem, 2.5vw, 1.75rem)" }}
+                      >
+                        {level.title}
+                      </h3>
+                      <p className="text-sm text-ink/70 leading-relaxed mb-6 max-w-lg">
+                        {level.description}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-signal-green flex-shrink-0" aria-hidden="true" />
+                        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal-green">
+                          {level.status}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* SECTION 3 — NAMIBIA PLATFORM                                       */}
+      {/* ------------------------------------------------------------------ */}
+      <section
+        id="namibia"
+        className="bg-warm-paper border-t border-chrome-light/60 border-b border-chrome-light/60"
+        aria-labelledby="namibia-heading"
+      >
         <div className="max-w-7xl mx-auto px-8 lg:px-20 py-24 lg:py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Text */}
@@ -694,7 +588,11 @@ export default function SystemesPage() {
                 <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-steel mb-3">
                   Plateforme centrale
                 </p>
-                <h2 id="namibia-heading" className="font-sans text-3xl font-medium text-ink mb-5">
+                <h2
+                  id="namibia-heading"
+                  className="font-sans font-normal md:font-light text-system-green leading-tight mb-5"
+                  style={{ fontSize: "clamp(1.6rem, 3vw, 2.4rem)" }}
+                >
                   Namibia — Le concentrateur de services
                 </h2>
                 <p className="text-base text-ink/75 leading-relaxed">
@@ -704,7 +602,6 @@ export default function SystemesPage() {
                 </p>
               </div>
 
-              {/* Feature list */}
               <div>
                 <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-steel mb-4">
                   Services communs
@@ -726,10 +623,9 @@ export default function SystemesPage() {
                 </ul>
               </div>
 
-              {/* Photo accent */}
               <div className="relative h-40 overflow-hidden border border-chrome-light/60">
                 <Image
-                  src="/photos/photo-1679587246899-8b9172fc78e2.avif"
+                  src="/photos/agent-pilot.avif"
                   alt="Infrastructure Namibia — plateforme centrale Lite Ops"
                   fill
                   className="object-cover object-center"
@@ -754,16 +650,21 @@ export default function SystemesPage() {
             >
               <NamibiaHubDiagram />
 
-              {/* Legend */}
-              <div className="w-full border border-chrome-light/60 bg-warm-paper p-4 space-y-2">
-                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-steel mb-3">Legende</p>
+              <div className="w-full border border-chrome-light/60 bg-architect-paper p-4 space-y-2">
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-steel mb-3">Légende</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-system-green border border-signal-green flex-shrink-0" aria-hidden="true" />
+                  <div
+                    className="w-6 h-6 rounded-full bg-system-green border border-signal-green flex-shrink-0"
+                    aria-hidden="true"
+                  />
                   <span className="font-mono text-[11px] text-chrome-dark">Hub Namibia — concentrateur central</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-architect-paper border border-chrome-light flex-shrink-0" aria-hidden="true" />
-                  <span className="font-mono text-[11px] text-chrome-dark">Service commun expose</span>
+                  <div
+                    className="w-6 h-6 rounded-full bg-architect-paper border border-chrome-light flex-shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span className="font-mono text-[11px] text-chrome-dark">Service commun exposé</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div
@@ -780,146 +681,83 @@ export default function SystemesPage() {
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* SECTION 2 — SYSTEM EXAMPLES                                        */}
-      {/* ------------------------------------------------------------------ */}
-      <section className="bg-warm-paper border-t border-chrome-light/60 border-b border-chrome-light/60" aria-labelledby="exemples-heading">
-        <div className="max-w-7xl mx-auto px-8 lg:px-20 py-24 lg:py-32">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={fadeUp}
-            custom={0}
-            className="mb-12"
-          >
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-steel mb-3">
-              Exemples concrets
-            </p>
-            <h2 id="exemples-heading" className="font-sans text-3xl font-medium text-ink">
-              Systèmes en production
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-80px" }}
-              variants={fadeUp}
-              custom={1}
-            >
-              <SystemDiagram
-                title="SYSTÈME RECRUTEMENT"
-                status="ACTIF"
-                objective="Sourcer, contacter et sélectionner les meilleurs candidats pour un poste interne."
-                agents={RECRUITMENT_AGENTS}
-                flow={["SOURCE", "CONTACT", "QUALIFY", "SELECT"]}
-                connectedSystems={["Outils RH", "Docs internes", "Bases de données"]}
-              />
-            </motion.div>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-80px" }}
-              variants={fadeUp}
-              custom={2}
-            >
-              <SystemDiagram
-                title="SYSTÈME ACQUISITION"
-                objective="Identifier, approcher et qualifier des prospects à fort potentiel."
-                agents={ACQUISITION_AGENTS}
-                flow={["IDENTIFY", "APPROACH", "QUALIFY", "CONVERT"]}
-              />
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* SECTION 3 — LAYERS                                                 */}
+      {/* SECTION 4 — SYSTEM LAYERS                                          */}
       {/* ------------------------------------------------------------------ */}
       <section className="bg-architect-paper border-b border-chrome-light/60" aria-labelledby="layers-heading">
         <div className="max-w-7xl mx-auto px-8 lg:px-20 py-24 lg:py-32">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={fadeUp}
-            custom={0}
-            className="mb-12 max-w-2xl"
-          >
+          <Reveal className="mb-12 max-w-2xl">
             <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-steel mb-3">
               Architecture en couches
             </p>
-            <h2 id="layers-heading" className="font-sans text-3xl font-medium text-ink mb-4">
+            <h2
+              id="layers-heading"
+              className="font-sans font-normal md:font-light text-system-green leading-tight mb-4"
+              style={{ fontSize: "clamp(1.6rem, 3vw, 2.4rem)" }}
+            >
               Les couches d&apos;un système
             </h2>
             <p className="text-base text-ink/75 leading-relaxed">
               Chaque système Lite Ops intègre trois couches superposées qui travaillent de concert
               pour assurer performance technique, pertinence métier et adoption durable.
             </p>
-          </motion.div>
+          </Reveal>
 
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={fadeUp}
-            custom={1}
-          >
+          <Reveal delay={0.1}>
             <LayerToggles />
-          </motion.div>
+          </Reveal>
         </div>
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* SECTION 4 — TECHNICAL CAPABILITIES                                 */}
+      {/* SECTION 5 — EXAMPLES OF APPLICATION                               */}
       {/* ------------------------------------------------------------------ */}
-      <section className="bg-warm-paper border-b border-chrome-light/60" aria-labelledby="capabilities-heading">
-        <div className="max-w-7xl mx-auto px-8 lg:px-20 py-20 lg:py-28">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={fadeUp}
-            custom={0}
-            className="mb-12"
-          >
-            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-steel mb-3">
-              Sous le capot
-            </p>
-            <h2 id="capabilities-heading" className="font-sans text-3xl font-medium text-ink">
-              Capacites techniques
+      <section className="bg-warm-paper border-b border-chrome-light/60" aria-labelledby="examples-heading">
+        <div className="max-w-7xl mx-auto px-8 lg:px-20 py-24 lg:py-32">
+          <Reveal className="mb-12">
+            <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-steel block mb-3">
+              EXEMPLES D&apos;APPLICATION
+            </span>
+            <h2
+              id="examples-heading"
+              className="font-sans font-normal md:font-light text-system-green leading-tight"
+              style={{ fontSize: "clamp(1.6rem, 3vw, 2.4rem)" }}
+            >
+              Des systèmes pour chaque métier.
             </h2>
-          </motion.div>
+          </Reveal>
 
-          <dl className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
-            {CAPABILITIES.map((cap, i) => (
-              <motion.div
-                key={cap.id}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-60px" }}
-                variants={fadeUp}
-                custom={i}
-                className="border border-chrome-light/60 bg-architect-paper p-5 group hover:border-chrome-dark transition-colors duration-200"
-              >
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-chrome-dark flex-shrink-0" aria-hidden="true" />
-                  <dt className="font-mono text-[11px] uppercase tracking-[0.15em] text-ink font-medium">
-                    {cap.label}
-                  </dt>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {APPLICATION_EXAMPLES.map((example, i) => (
+              <Reveal key={example.id} delay={i * 0.08}>
+                <div className="border border-chrome-light bg-architect-paper p-6 flex flex-col gap-4 h-full hover:border-chrome-dark transition-colors duration-200">
+                  <div className="flex-1">
+                    <h3 className="font-sans font-medium text-ink mb-2 text-base">
+                      {example.title}
+                    </h3>
+                    <p className="text-sm text-ink/70 leading-relaxed">
+                      {example.description}
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 pt-2 border-t border-chrome-light/60">
+                    {example.agents.map((agent) => (
+                      <span
+                        key={agent}
+                        className="font-mono text-[11px] uppercase tracking-[0.12em] text-steel border border-chrome px-2 py-1 bg-warm-paper"
+                      >
+                        {agent}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <dd className="text-sm text-ink/75 leading-relaxed">{cap.description}</dd>
-              </motion.div>
+              </Reveal>
             ))}
-          </dl>
+          </div>
         </div>
       </section>
 
       {/* ------------------------------------------------------------------ */}
-      {/* SECTION 5 — CTA                                                    */}
+      {/* SECTION 6 — CONTACT CTA                                           */}
       {/* ------------------------------------------------------------------ */}
       <section id="contact" className="bg-system-green" aria-labelledby="cta-heading">
         <div className="max-w-7xl mx-auto px-8 lg:px-20 py-24 lg:py-32">
@@ -937,23 +775,26 @@ export default function SystemesPage() {
                 <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-chrome-light/70 mb-3">
                   Passons à l&apos;action
                 </p>
-                <h2 id="cta-heading" className="font-sans text-3xl lg:text-4xl font-medium text-architect-paper leading-tight">
+                <h2
+                  id="cta-heading"
+                  className="font-sans font-normal md:font-light text-architect-paper leading-tight"
+                  style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.8rem)" }}
+                >
                   Construisons votre système
                 </h2>
               </div>
               <p className="text-base text-architect-paper/80 leading-relaxed">
                 Chaque système Lite Ops est conçu sur mesure autour de votre objectif métier.
-                Décrivez-nous votre besoin — nous revenons vers vous avec une proposition d&apos;architecture
-                en 48h.
+                Décrivez-nous votre besoin — nous revenons vers vous avec une proposition
+                d&apos;architecture en 48h.
               </p>
 
-              {/* Stats */}
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-architect-paper/10">
                 {[
                   { value: "48h", label: "Première réponse" },
                   { value: "100%", label: "Souverain FR" },
                   { value: "< 2 sem", label: "Premier agent live" },
-                  { value: "3", label: "Couches integrees" },
+                  { value: "3", label: "Couches intégrées" },
                 ].map((stat) => (
                   <div key={stat.label} className="space-y-1">
                     <p className="font-mono text-xl font-medium text-architect-paper">{stat.value}</p>
@@ -979,6 +820,6 @@ export default function SystemesPage() {
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 }

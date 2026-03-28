@@ -718,7 +718,7 @@ const AGENT_CARDS: AgentCard[] = [
     name: "PILOT",
     description:
       "Uploader une base. Analyser. Générer des rapports via chatbot.",
-    photo: "/photos/photo-1679587246899-8b9172fc78e2.avif",
+    photo: "/photos/agent-pilot.avif",
     href: "/agents/pilot",
     subCards: [
       { code: "AG001-RI", label: "Risques" },
@@ -730,7 +730,7 @@ const AGENT_CARDS: AgentCard[] = [
     name: "SAILOR",
     description:
       "Intégrer une base documentaire. Trouver via chatbot. Sources citées.",
-    photo: "/photos/photo-1553748024-dd3fd69ab116.avif",
+    photo: "/photos/agent-sailor.avif",
     href: "/agents/sailor",
     subCards: [],
   },
@@ -738,7 +738,7 @@ const AGENT_CARDS: AgentCard[] = [
     code: "AG003",
     name: "MATCHMAKER",
     description: "Définir un besoin. Trouver la ressource idéale. Score radar expliqué.",
-    photo: "/photos/photo-1739086759198-b99a6e3f8599.avif",
+    photo: "/photos/agent-matchmaker.avif",
     href: "/agents/matchmaker",
     subCards: [{ code: "MA-01", label: "Ressources RH" }, { code: "MA-02", label: "Conseil" }],
   },
@@ -1221,7 +1221,7 @@ const NEWS_ITEMS: NewsItem[] = [
     title: "IA locale et souveraineté des données",
     excerpt:
       "Pourquoi exécuter ses modèles en France n'est plus une contrainte mais un avantage compétitif.",
-    photo: "/photos/photo-1739086759198-b99a6e3f8599.avif",
+    photo: "/photos/agent-matchmaker.avif",
   },
   {
     tag: "Production",

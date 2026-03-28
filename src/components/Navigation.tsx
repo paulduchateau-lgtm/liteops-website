@@ -15,7 +15,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "Agents", href: "/agents" },
   { label: "Systèmes", href: "/systemes" },
   { label: "Custom", href: "/custom" },
-  { label: "À propos", href: "#about" },
+  { label: "À propos", href: "/a-propos" },
 ];
 
 function Logo() {
