@@ -731,7 +731,7 @@ export default function MatchmakerPage() {
             transition={{ duration: 0.5, delay: 0.65 }}
           >
             <a
-              href="mailto:contact@liteops.fr?subject=Intérêt MATCHMAKER AG003"
+              href="mailto:contact@lite-ops.com?subject=Intérêt MATCHMAKER AG003"
               className="group inline-flex items-center gap-3 border border-steel/40 px-8 py-4 font-mono text-sm text-architect-paper/80 tracking-widest uppercase transition-all duration-300 hover:border-architect-paper/40 hover:text-architect-paper/80"
             >
               Exprimer mon intérêt
@@ -1063,7 +1063,7 @@ export default function MatchmakerPage() {
                   </p>
 
                   <a
-                    href="mailto:contact@liteops.fr?subject=Intérêt MATCHMAKER AG003"
+                    href="mailto:contact@lite-ops.com?subject=Intérêt MATCHMAKER AG003"
                     className="group inline-flex items-center gap-2 border border-rule text-steel font-mono text-xs tracking-widest uppercase px-6 py-3 hover:border-chrome-dark hover:text-ink transition-all duration-200"
                   >
                     Exprimer mon intérêt
@@ -1205,7 +1205,7 @@ export default function MatchmakerPage() {
 
                   <div className="mt-8">
                     <a
-                      href="mailto:contact@liteops.fr?subject=MATCHMAKER - Intérêt tarif"
+                      href="mailto:contact@lite-ops.com?subject=MATCHMAKER - Intérêt tarif"
                       className={[
                         "group inline-flex items-center gap-2 w-full justify-center border px-6 py-3 font-mono text-xs tracking-widest uppercase transition-all duration-200",
                         tier.highlight

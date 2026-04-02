@@ -661,7 +661,7 @@ export default function PilotPage() {
             transition={{ duration: 0.5, delay: 0.65 }}
           >
             <a
-              href="mailto:contact@liteops.fr?subject=Démo PILOT AG001"
+              href="mailto:contact@lite-ops.com?subject=Démo PILOT AG001"
               className="group inline-flex items-center gap-3 border border-architect-paper/30 px-8 py-4 font-mono text-sm text-architect-paper/80 tracking-widest uppercase transition-all duration-300 hover:border-signal-green hover:text-signal-green hover:bg-signal-green/5"
             >
               Demander une démo
@@ -1076,7 +1076,7 @@ export default function PilotPage() {
 
                   <div className="mt-8">
                     <a
-                      href="mailto:contact@liteops.fr?subject=PILOT - Offre {tier.name}"
+                      href="mailto:contact@lite-ops.com?subject=PILOT - Offre {tier.name}"
                       className={[
                         "group inline-flex items-center gap-2 w-full justify-center border px-6 py-3 font-mono text-xs tracking-widest uppercase transition-all duration-200",
                         tier.highlight

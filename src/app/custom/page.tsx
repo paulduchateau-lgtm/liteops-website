@@ -793,7 +793,7 @@ export default function CustomPage() {
               className="flex flex-col gap-3 sm:flex-row"
             >
               <a
-                href="mailto:contact@liteops.fr"
+                href="mailto:contact@lite-ops.com"
                 className={[
                   "inline-flex items-center justify-center gap-2 px-7 py-4",
                   "bg-signal-green text-system-green",
@@ -806,7 +806,7 @@ export default function CustomPage() {
               </a>
 
               <a
-                href="https://cal.com/liteops"
+                href="https://calendly.com/paul-duchateau/30min"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={[
