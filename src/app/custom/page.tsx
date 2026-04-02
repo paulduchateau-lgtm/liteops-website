@@ -802,7 +802,7 @@ export default function CustomPage() {
                   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal-green",
                 ].join(" ")}
               >
-                contact@liteops.fr
+                contact@lite-ops.com
               </a>
 
               <a
