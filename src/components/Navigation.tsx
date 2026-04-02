@@ -184,8 +184,10 @@ export function Navigation() {
 
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center">
-              <Link
-                href="#contact"
+              <a
+                href="https://calendly.com/paul-duchateau/30min"
+                target="_blank"
+                rel="noopener noreferrer"
                 className={[
                   "text-sm font-medium px-5 py-2",
                   "border border-chrome-dark text-ink",
@@ -194,7 +196,7 @@ export function Navigation() {
                 ].join(" ")}
               >
                 Demander une démo
-              </Link>
+              </a>
             </div>
 
             {/* Hamburger */}
@@ -305,8 +307,10 @@ export function Navigation() {
                 }}
                 className="mt-4"
               >
-                <Link
-                  href="#contact"
+                <a
+                  href="https://calendly.com/paul-duchateau/30min"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => setMobileOpen(false)}
                   className={[
                     "block w-full text-center text-sm font-medium px-5 py-3",
@@ -316,7 +320,7 @@ export function Navigation() {
                   ].join(" ")}
                 >
                   Demander une démo
-                </Link>
+                </a>
               </motion.div>
             </nav>
           </motion.div>
