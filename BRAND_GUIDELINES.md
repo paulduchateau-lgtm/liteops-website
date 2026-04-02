@@ -20,7 +20,7 @@ The palette is intentionally desaturated — warm grays, not cold. Every tone ca
 | Token | Hex | Name | Usage |
 |---|---|---|---|
 | `--color-ink` | `#1C1C1A` | Ink | Primary text — headings, body copy, all critical readable content |
-| `--color-system-green` | `#2C2F26` | System Green | Almost black-olive — primary dark tone, alternate headings, dark surfaces |
+| `--color-system-green` | `#1E1D1B` | System Green | Almost black-olive — primary dark tone, alternate headings, dark surfaces |
 | `--color-steel` | `#7D7A73` | Steel | Heavy labels, secondary headings, metadata |
 | `--color-moss` | `#6B6B60` | Moss | Desaturated green-gray — tertiary text, captions |
 | `--color-sage` | `#908E85` | Sage | Warm gray — placeholder text, disabled states, muted annotations |

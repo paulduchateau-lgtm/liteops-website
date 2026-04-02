@@ -18,7 +18,7 @@ const NAV_LINKS: NavLink[] = [
   { label: "À propos", href: "/a-propos" },
 ];
 
-function Logo() {
+function Logo({ light }: { light: boolean }) {
   return (
     <Link
       href="/"
@@ -26,7 +26,7 @@ function Logo() {
       aria-label="Lite Ops — accueil"
     >
       <span
-        className="font-medium uppercase tracking-[0.22em] text-ink leading-none"
+        className={`font-medium uppercase tracking-[0.22em] leading-none transition-colors duration-300 ${light ? "text-architect-paper" : "text-ink"}`}
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         LITE
@@ -39,7 +39,7 @@ function Logo() {
         ●
       </span>
       <span
-        className="font-medium uppercase tracking-[0.22em] text-ink leading-none"
+        className={`font-medium uppercase tracking-[0.22em] leading-none transition-colors duration-300 ${light ? "text-architect-paper" : "text-ink"}`}
         style={{ fontFamily: "'DM Sans', sans-serif" }}
       >
         OPS
@@ -52,20 +52,29 @@ function NavLinkItem({
   href,
   label,
   isActive,
+  light = false,
   onClick,
 }: {
   href: string;
   label: string;
   isActive: boolean;
+  light?: boolean;
   onClick?: () => void;
 }) {
   const isHash = href.startsWith("#");
 
   const baseClasses =
-    "relative text-sm font-medium transition-colors duration-200 group";
-  const colorClasses = isActive
-    ? "text-ink"
-    : "text-sage hover:text-ink";
+    "relative text-sm font-medium transition-colors duration-300 group";
+
+  // On dark background (transparent nav): architect-paper text
+  // On light background (scrolled nav): ink/sage text
+  const colorClasses = light
+    ? isActive
+      ? "text-architect-paper"
+      : "text-architect-paper/70 hover:text-architect-paper"
+    : isActive
+      ? "text-ink"
+      : "text-sage hover:text-ink";
 
   const inner = (
     <>
@@ -108,6 +117,10 @@ export function Navigation() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // When nav is transparent (top of page), text must be light to be readable
+  // over dark hero sections. Once scrolled, nav has paper background → dark text.
+  const light = !scrolled;
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -165,7 +178,7 @@ export function Navigation() {
         <div className="max-w-7xl mx-auto px-8 lg:px-20">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Logo />
+            <Logo light={light} />
 
             {/* Desktop nav */}
             <nav
@@ -178,6 +191,7 @@ export function Navigation() {
                   href={link.href}
                   label={link.label}
                   isActive={isLinkActive(link.href)}
+                  light={light}
                 />
               ))}
             </nav>
@@ -189,10 +203,10 @@ export function Navigation() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={[
-                  "text-sm font-medium px-5 py-2",
-                  "border border-chrome-dark text-ink",
-                  "transition-all duration-200",
-                  "hover:bg-system-green hover:text-architect-paper hover:border-system-green",
+                  "text-sm font-medium px-5 py-2 transition-all duration-300",
+                  light
+                    ? "border border-architect-paper/60 text-architect-paper hover:bg-architect-paper hover:text-system-green hover:border-architect-paper"
+                    : "border border-chrome-dark text-ink hover:bg-system-green hover:text-architect-paper hover:border-system-green",
                 ].join(" ")}
               >
                 Demander une démo
@@ -204,7 +218,7 @@ export function Navigation() {
               ref={hamburgerRef}
               type="button"
               onClick={() => setMobileOpen((prev) => !prev)}
-              className="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-[5px] text-ink"
+              className={`md:hidden flex flex-col justify-center items-center w-10 h-10 gap-[5px] ${light ? "text-architect-paper" : "text-ink"}`}
               aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
               aria-expanded={mobileOpen}
               aria-controls="mobile-menu"
@@ -216,12 +230,12 @@ export function Navigation() {
                     : { rotate: 0, y: 0, scaleX: 1 }
                 }
                 transition={{ duration: 0.22, ease: "easeInOut" }}
-                className="block w-5 h-px bg-ink origin-center"
+                className={`block w-5 h-px origin-center transition-colors duration-300 ${light ? "bg-architect-paper" : "bg-ink"}`}
               />
               <motion.span
                 animate={mobileOpen ? { opacity: 0, scaleX: 0.5 } : { opacity: 1, scaleX: 1 }}
                 transition={{ duration: 0.18, ease: "easeInOut" }}
-                className="block w-5 h-px bg-ink origin-center"
+                className={`block w-5 h-px origin-center transition-colors duration-300 ${light ? "bg-architect-paper" : "bg-ink"}`}
               />
               <motion.span
                 animate={
@@ -230,7 +244,7 @@ export function Navigation() {
                     : { rotate: 0, y: 0, scaleX: 1 }
                 }
                 transition={{ duration: 0.22, ease: "easeInOut" }}
-                className="block w-5 h-px bg-ink origin-center"
+                className={`block w-5 h-px origin-center transition-colors duration-300 ${light ? "bg-architect-paper" : "bg-ink"}`}
               />
             </button>
           </div>

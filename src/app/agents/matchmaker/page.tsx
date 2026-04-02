@@ -342,10 +342,10 @@ function PipelineDiagram({
         )}
         <rect x={op.x} y={op.y} width={op.w} height={op.h} fill={sel ? "#EFF5E6" : "#EFEFEF"} stroke={sel ? "#A5D900" : "#9A968E"} strokeWidth="1" />
         <rect x={op.x} y={op.y} width={op.w} height={18} fill={sel ? "#A5D900" : "#9A968E"} />
-        <text x={op.x + 5} y={op.y + 12} fontFamily="'JetBrains Mono', monospace" fontSize="7" fill={sel ? "#2C2F26" : "#F0EEEB"} fontWeight="500" letterSpacing="0.08em">
+        <text x={op.x + 5} y={op.y + 12} fontFamily="'JetBrains Mono', monospace" fontSize="7" fill={sel ? "#1E1D1B" : "#F0EEEB"} fontWeight="500" letterSpacing="0.08em">
           {op.code}
         </text>
-        <text x={op.x + op.w / 2} y={op.y + 33} fontFamily="'JetBrains Mono', monospace" fontSize="7.5" fill={sel ? "#2C2F26" : "#1C1C1A"} fontWeight="500" letterSpacing="0.04em" textAnchor="middle">
+        <text x={op.x + op.w / 2} y={op.y + 33} fontFamily="'JetBrains Mono', monospace" fontSize="7.5" fill={sel ? "#1E1D1B" : "#1C1C1A"} fontWeight="500" letterSpacing="0.04em" textAnchor="middle">
           {op.label}
         </text>
         <text x={op.x + op.w / 2} y={op.y + 48} fontFamily="'JetBrains Mono', monospace" fontSize="6" fill="#908E85" letterSpacing="0.03em" textAnchor="middle">

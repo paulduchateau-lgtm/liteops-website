@@ -5,7 +5,7 @@
   /* ── Brand Colors ── Desaturated palette with chrome accents ── */
 
   /* Core darks — desaturated, near-neutral */
-  --color-system-green: #2C2F26;       /* Almost black-olive — primary dark */
+  --color-system-green: #1E1D1B;       /* Almost black-olive — primary dark */
   --color-ink: #1C1C1A;                /* Near black — text */
 
   /* Signal — the ONLY saturated color. Used for active/live states ONLY */

@@ -138,20 +138,15 @@ function AgentCardComponent({ agent, index }: { agent: AgentCard; index: number 
           <div className="absolute inset-0 flex flex-col justify-between p-8">
             {/* Top: Status + Code */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full ${
-                    agent.status === "ACTIF" ? "bg-signal-green" : "bg-steel"
-                  }`}
-                />
-                <span
-                  className={`font-mono text-[11px] tracking-[0.2em] uppercase ${
-                    agent.status === "ACTIF" ? "text-signal-green" : "text-steel"
-                  }`}
-                >
+              {agent.status === "ACTIF" ? (
+                <span className="font-mono text-[11px] tracking-[0.2em] uppercase px-2 py-0.5 bg-signal-green text-system-green">
                   {agent.status}
                 </span>
-              </div>
+              ) : (
+                <span className="font-mono text-[11px] tracking-[0.2em] uppercase px-2 py-0.5 border border-architect-paper/30 text-architect-paper/60">
+                  {agent.status}
+                </span>
+              )}
               <span className="font-mono text-[11px] text-chrome-dark tracking-widest uppercase">
                 {agent.code}
               </span>
@@ -161,37 +156,42 @@ function AgentCardComponent({ agent, index }: { agent: AgentCard; index: number 
             <div>
               {/* Agent name */}
               <h2 className="font-sans font-normal md:font-light text-architect-paper leading-none mb-2"
-                style={{ fontSize: "clamp(2rem, 4vw, 3.2rem)" }}
+                style={{ fontSize: "clamp(1.6rem, 3vw, 2.4rem)" }}
               >
                 {agent.name}
               </h2>
 
               {/* Tagline */}
-              <p className="font-mono text-xs text-signal-green tracking-wider uppercase mb-4">
+              <p className="font-mono text-xs text-signal-green tracking-wider uppercase mb-4 line-clamp-1">
                 {agent.tagline}
               </p>
 
               {/* Description */}
-              <p className="font-sans text-sm text-architect-paper/80 leading-relaxed mb-6 max-w-sm">
+              <p className="font-sans text-sm text-architect-paper/80 leading-relaxed mb-4 max-w-sm line-clamp-2">
                 {agent.description}
               </p>
 
-              {/* Operators pipeline */}
-              <div className="flex flex-wrap items-center gap-1.5 mb-6">
-                {agent.operators.map((op, i) => (
+              {/* Operators pipeline — max 4 shown */}
+              <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                {agent.operators.slice(0, 4).map((op, i, arr) => (
                   <span key={op} className="flex items-center gap-1.5">
                     <span className="font-mono text-[11px] text-architect-paper/70 tracking-wider uppercase px-1.5 py-0.5 border border-architect-paper/25">
                       {op}
                     </span>
-                    {i < agent.operators.length - 1 && (
+                    {i < arr.length - 1 && (
                       <span className="text-chrome-dark text-[11px]" aria-hidden="true">→</span>
                     )}
                   </span>
                 ))}
+                {agent.operators.length > 4 && (
+                  <span className="font-mono text-[11px] text-architect-paper/45 tracking-wider">
+                    +{agent.operators.length - 4}
+                  </span>
+                )}
               </div>
 
               {/* Variants */}
-              <div className="flex flex-wrap gap-2 mb-6">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {agent.variants.map((v) => (
                   <div
                     key={v.code}
