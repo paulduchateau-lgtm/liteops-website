@@ -28,16 +28,16 @@ type Cofounder = {
 const COFOUNDERS: Cofounder[] = [
   {
     initials: "C",
-    photo: "/photos/staff-cyril-vegni.jpg",
+    photo: "/photos/staff-cyril-vegni.png",
     layer: "LAYER MÉTIER",
-    name: "Cyril",
+    name: "Cyril V.",
     bio: "Fondateur et investisseur dans plusieurs cabinets de conseil, avec deux exits remarqués, il poursuit aujourd'hui son engagement auprès de ses clients en stratégie de transformation et en change management. Sa conviction : le conseil est appelé à disparaître s'il n'évolue pas. Sa mission : le réinventer en profondeur — faire émerger de véritables transformers.",
     tags: ["Risques", "Legal/Compliance", "Excellence opérationnelle", "Optimisation des ressources"],
     quote: "Combiner expertise humaine et puissance de l'IA pour un conseil réellement augmenté, plus transparent et tourné vers l'impact durable.",
   },
   {
     initials: "PD",
-    photo: "/photos/staff-paul-duchateau.jpg",
+    photo: "/photos/staff-paul-duchateau.png",
     layer: "LAYER PRODUIT & STRATÉGIE",
     name: "Paul D.",
     bio: "Ingénieur entrepreneur, toujours à la croisée IT Product/Project Manager et Business Strategist. Sa mission : comprendre un métier et penser comment l'améliorer, le rendre plus efficace, plus agréable. Chez LiteOps, il met tout en musique.",
@@ -46,7 +46,7 @@ const COFOUNDERS: Cofounder[] = [
   },
   {
     initials: "PB",
-    photo: "/photos/staff-paul-breton.jpg",
+    photo: "/photos/staff-paul-breton.png",
     layer: "LAYER TECHNIQUE & DATA",
     name: "Paul B.",
     bio: "Ingénieur architecte Data/IA, plus de 150 use cases IA déployés depuis 10 ans. Architecte de Namibia, la plateforme d'agrégation de data et concentrateur de services. Sa vision : transposer le métier en organisation de la donnée.",
@@ -163,7 +163,7 @@ function CofounderCard({ person, index }: { person: Cofounder; index: number }) 
         </div>
 
         {/* Layer badge */}
-        <span className="font-mono text-[11px] tracking-[0.2em] uppercase text-signal-green-text block mb-3">
+        <span className="badge-signal mb-3">
           {person.layer}
         </span>
 
@@ -346,7 +346,7 @@ export default function AProposPage() {
                   <span className="font-mono text-[11px] text-steel tracking-wide leading-tight">
                     {cert.full}
                   </span>
-                  <span className="font-mono text-[10px] text-signal-green-text tracking-widest uppercase mt-1">
+                  <span className="badge-signal mt-1">
                     Certified
                   </span>
                 </div>

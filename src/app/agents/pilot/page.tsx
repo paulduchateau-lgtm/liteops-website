@@ -1038,9 +1038,7 @@ export default function PilotPage() {
                 >
                   {tier.highlight && (
                     <div className="mb-4">
-                      <span className="font-mono text-[11px] tracking-widest text-signal-green-text uppercase border border-signal-green-text px-2 py-0.5">
-                        Recommandé
-                      </span>
+                      <span className="badge-signal">Recommandé</span>
                     </div>
                   )}
 

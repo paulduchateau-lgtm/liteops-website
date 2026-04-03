@@ -552,9 +552,7 @@ export default function SystemesPage() {
                       </p>
                       <div className="flex items-center gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-signal-green flex-shrink-0" aria-hidden="true" />
-                        <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-signal-green-text">
-                          {level.status}
-                        </span>
+                        <span className="badge-signal">{level.status}</span>
                       </div>
                     </div>
                   </div>
